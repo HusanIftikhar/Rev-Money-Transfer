@@ -1,9 +1,12 @@
 package com.revolut.transfers;
 
+
+import com.revolut.transfers.exceptions.AccountNotFoundException;
 import com.revolut.transfers.model.Account;
 import com.revolut.transfers.repositories.AccountRepository;
 import com.revolut.transfers.services.TransferService;
 import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 
 import static org.mockito.AdditionalMatchers.gt;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,7 +38,14 @@ class TransferServiceTest {
         Assert.assertTrue(account.getAccountId() > 0);
 
     }
+    @DisplayName("Should throw exception if account is not found ")
+    @Test
+    void testGetAccountByIdThrowExceptionIfAccountNotFound(){
 
+        AccountNotFoundException thrown = Assertions.assertThrows(AccountNotFoundException.class,()->transferService.getAccountById(Long.MAX_VALUE),
+                "Expected throw AccountNotFoundException but it didn't throw");
+
+    }
 
 
 
