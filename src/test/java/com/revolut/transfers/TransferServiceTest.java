@@ -30,12 +30,10 @@ class TransferServiceTest {
     @DisplayName("Should pass if valid account id is passed")
     @Test
      void testGetAccountFromDbById(){
-        when(accountRepository.getAccountById(gt(0l))).thenReturn(new Account(1l,"Iftikhar hussain", BigDecimal.ZERO));
+        when(accountRepository.getAccountById(gt(0L))).thenReturn(new Account(1L,"Iftikhar hussain", BigDecimal.ZERO));
         Account account =transferService.getAccountById(1L);
         Assert.assertNotNull(account);
         Assert.assertTrue(account.getAccountId() > 0);
-
-
 
     }
 

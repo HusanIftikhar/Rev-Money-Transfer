@@ -9,9 +9,9 @@ public class TransferService {
     private AccountRepository accountRepository;
 
     public Account getAccountById(Long accountId) {
-        Account account = accountRepository.getAccountById(accountId);
-        return account;
-
+        return  accountRepository.getAccountById(accountId);
     }
+
+
 
 }
