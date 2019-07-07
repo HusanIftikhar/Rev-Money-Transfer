@@ -4,6 +4,7 @@ import com.revolut.transfers.exceptions.AccountNotFoundException;
 import com.revolut.transfers.model.Account;
 import com.revolut.transfers.repositories.AccountRepository;
 
+import java.math.BigDecimal;
 
 public class TransferServiceImpl implements TransferService {
 
@@ -14,8 +15,10 @@ public class TransferServiceImpl implements TransferService {
         return  accountRepository.getAccountById(accountId);
     }
 
-
-
+    @Override
+    public Double withdrawal(Long accountId, Double amount, String currency) {
+        return null;
+    }
 
 
 }
