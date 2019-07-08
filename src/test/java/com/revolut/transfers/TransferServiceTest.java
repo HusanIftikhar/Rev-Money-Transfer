@@ -69,6 +69,13 @@ class TransferServiceTest {
                 .isInstanceOf(InvalidAmountException.class);
 
     }
+    @DisplayName("should throw AccountNotFoundException if account is not valid")
+    @Test
+    void testWithdrawalWithInvalidAccountAndValidAmount(){
+        when(accountRepository.getAccountById(Long.MAX_VALUE)).thenThrow(new AccountNotFoundException("Account not found for accountId:"+ Long.MAX_VALUE));
+        assertThatThrownBy(()->transferService.withdrawal(Long.MAX_VALUE,10.00,"USD")).isInstanceOf(AccountNotFoundException.class);
+    }
+
 
 
 
