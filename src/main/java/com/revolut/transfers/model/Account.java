@@ -50,7 +50,7 @@ public class Account {
 
         try {
             accountLock.lock();
-            if (transferAction.WITHDRAWAL == transferAction) {
+            if (TransferActions.WITHDRAWAL == transferAction) {
                 withdrawal(amount);
             } else {
                 deposit(amount);
