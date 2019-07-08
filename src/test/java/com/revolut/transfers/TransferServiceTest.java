@@ -1,7 +1,9 @@
 package com.revolut.transfers;
 
 
+import com.revolut.transfers.enums.TransferStatus;
 import com.revolut.transfers.exceptions.AccountNotFoundException;
+import com.revolut.transfers.exceptions.ExceptionConstants;
 import com.revolut.transfers.exceptions.InvalidAmountException;
 import com.revolut.transfers.model.Account;
 import com.revolut.transfers.repositories.AccountRepository;
@@ -43,10 +45,10 @@ class TransferServiceTest {
     @DisplayName("Should throw exception if account is not found ")
     @Test
     void testGetAccountByIdThrowExceptionIfAccountNotFound(){
-        when(accountRepository.getAccountById(Long.MAX_VALUE)).thenThrow(new AccountNotFoundException("Account not found for accountId:"+ Long.MAX_VALUE));
+        when(accountRepository.getAccountById(Long.MAX_VALUE)).thenThrow(new AccountNotFoundException(ExceptionConstants.ACCOUNT_NOT_FOUND_EXCEPTION_MESSAGE + Long.MAX_VALUE));
          assertThrows(AccountNotFoundException.class,()->transferService.getAccountById(Long.MAX_VALUE),
                 "Expected throw AccountNotFoundException but it didn't throw");
-        assertThatThrownBy(()->transferService.getAccountById(Long.MAX_VALUE)).hasMessage("Account not found for accountId:"+ Long.MAX_VALUE);
+        assertThatThrownBy(()->transferService.getAccountById(Long.MAX_VALUE)).hasMessage(ExceptionConstants.ACCOUNT_NOT_FOUND_EXCEPTION_MESSAGE + Long.MAX_VALUE);
     }
 
 
@@ -56,8 +58,9 @@ class TransferServiceTest {
 
         when(accountRepository.getAccountById(1L)).thenReturn(testAccount);
         doNothing().when(accountRepository).updateAccount(testAccount.getAccountId(),testAccount);
-         transferService.withdrawal(1L,10.00,"USD");
+        TransferStatus status= transferService.withdrawal(1L,10.00,"USD");
          assertEquals(Money.of(90,"USD"),testAccount.getAvailableBalance());
+         assertEquals(TransferStatus.SUCCESS,status);
     }
 
     @DisplayName(("should throw InvalidAmountException if withdrawal amount is 0 or negative"))
@@ -72,10 +75,22 @@ class TransferServiceTest {
     @DisplayName("should throw AccountNotFoundException if account is not valid")
     @Test
     void testWithdrawalWithInvalidAccountAndValidAmount(){
-        when(accountRepository.getAccountById(Long.MAX_VALUE)).thenThrow(new AccountNotFoundException("Account not found for accountId:"+ Long.MAX_VALUE));
+        when(accountRepository.getAccountById(Long.MAX_VALUE)).thenThrow(new AccountNotFoundException(ExceptionConstants.ACCOUNT_NOT_FOUND_EXCEPTION_MESSAGE + Long.MAX_VALUE));
         assertThatThrownBy(()->transferService.withdrawal(Long.MAX_VALUE,10.00,"USD")).isInstanceOf(AccountNotFoundException.class);
     }
 
+    @DisplayName("should pass when currency code is valid currency code and is supported currencies by application ")
+    @Test
+    void testShouldPassIfCurrencyIsValidIsOfSupportedCurrencies(){
+        when(accountRepository.getAccountById(1L)).thenReturn(testAccount);
+        TransferStatus status= transferService.withdrawal(1L,10.00,"USD");
+        assertEquals(TransferStatus.SUCCESS,status);
+        status= transferService.withdrawal(1L,10.00,"GBP");
+        assertEquals(TransferStatus.SUCCESS,status);
+        status= transferService.withdrawal(1L,10.00,"EURO");
+        assertEquals(TransferStatus.SUCCESS,status);
+
+    }
 
 
 
