@@ -2,7 +2,6 @@ package com.revolut.transfers.services;
 
 import com.revolut.transfers.enums.TransferStatus;
 import com.revolut.transfers.exceptions.AccountNotFoundException;
-import com.revolut.transfers.exceptions.InvalidAmountException;
 import com.revolut.transfers.model.Account;
 
 public interface TransferService {

@@ -50,7 +50,7 @@ class TransferServiceTest {
     }
 
 
-    @DisplayName("should withdrawal amount from account")
+    @DisplayName("should withdrawal amount from account if account and withdrawal amount is valid")
     @Test
     void testWithdrawValidAmountFromAccount(){
 
@@ -69,6 +69,8 @@ class TransferServiceTest {
                 .isInstanceOf(InvalidAmountException.class);
 
     }
+
+
 
 
 
