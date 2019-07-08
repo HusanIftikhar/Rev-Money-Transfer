@@ -2,6 +2,7 @@ package com.revolut.transfers;
 
 
 import com.revolut.transfers.exceptions.AccountNotFoundException;
+import com.revolut.transfers.exceptions.InvalidAmountException;
 import com.revolut.transfers.model.Account;
 import com.revolut.transfers.repositories.AccountRepository;
 import com.revolut.transfers.services.TransferServiceImpl;
@@ -62,9 +63,10 @@ class TransferServiceTest {
     @DisplayName(("should throw InvalidAmountException if withdrawal amount is 0 or negative"))
     @Test
     void testWithdrawalInvalidAmount(){
-        when(accountRepository.getAccountById(1L)).thenReturn(testAccount);
-        doNothing().when(accountRepository).updateAccount(testAccount.getAccountId(),testAccount);
-       assertThatThrownBy(()->transferService.withdrawal(1L,0.00,"USD")).hasCauseExactlyInstanceOf(RuntimeException.class);
+       assertThatThrownBy(()->transferService.withdrawal(1L,0.00,"USD"))
+         .isInstanceOf(InvalidAmountException.class);
+        assertThatThrownBy(()->transferService.withdrawal(1L,-10.00,"USD"))
+                .isInstanceOf(InvalidAmountException.class);
 
     }
 

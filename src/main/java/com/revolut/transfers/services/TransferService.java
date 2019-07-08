@@ -2,6 +2,7 @@ package com.revolut.transfers.services;
 
 import com.revolut.transfers.enums.TransferStatus;
 import com.revolut.transfers.exceptions.AccountNotFoundException;
+import com.revolut.transfers.exceptions.InvalidAmountException;
 import com.revolut.transfers.model.Account;
 
 public interface TransferService {
@@ -16,5 +17,5 @@ public interface TransferService {
     Account getAccountById(Long accountId) throws AccountNotFoundException;
 
 
-    TransferStatus withdrawal(Long accountId, Double amount, String currency);
+    TransferStatus withdrawal(Long accountId, Double amount, String currency) throws RuntimeException;
 }
