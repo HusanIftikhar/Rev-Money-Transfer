@@ -57,10 +57,17 @@ class TransferServiceTest {
         doNothing().when(accountRepository).updateAccount(testAccount.getAccountId(),testAccount);
          transferService.withdrawal(1L,10.00,"USD");
          assertEquals(Money.of(90,"USD"),testAccount.getAvailableBalance());
+    }
 
-
+    @DisplayName(("should throw InvalidAmountException if withdrawal amount is 0 or negative"))
+    @Test
+    void testWithdrawalInvalidAmount(){
+        when(accountRepository.getAccountById(1L)).thenReturn(testAccount);
+        doNothing().when(accountRepository).updateAccount(testAccount.getAccountId(),testAccount);
+       assertThatThrownBy(()->transferService.withdrawal(1L,0.00,"USD")).hasCauseExactlyInstanceOf(RuntimeException.class);
 
     }
+
 
 
 
