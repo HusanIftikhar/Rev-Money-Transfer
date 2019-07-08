@@ -5,6 +5,7 @@ import com.revolut.transfers.exceptions.AccountNotFoundException;
 import com.revolut.transfers.model.Account;
 import com.revolut.transfers.repositories.AccountRepository;
 import com.revolut.transfers.services.TransferServiceImpl;
+import org.javamoney.moneta.Money;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,13 +18,14 @@ import java.math.BigDecimal;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.AdditionalMatchers.gt;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
 class TransferServiceTest {
 
-    private Account testAccount = new Account(1L, "Iftikhar Hussain", new BigDecimal(100.00));
+    private Account testAccount = new Account(1L, "Iftikhar Hussain", 100.00);
     @InjectMocks
     private TransferServiceImpl transferService;
     @Mock
@@ -54,8 +56,9 @@ class TransferServiceTest {
     void testWithdrawValidAmountFromAccount(){
 
         when(accountRepository.getAccountById(1L)).thenReturn(testAccount);
-        Double amountAfterWithdrawal = transferService.withdrawal(1L,10.00,"USD");
-        assertEquals(new BigDecimal(amountAfterWithdrawal),testAccount.getAvailableBalance());
+        doNothing().when(accountRepository).updateAccount(testAccount.getAccountId(),testAccount);
+         transferService.withdrawal(1L,10.00,"USD");
+         assertEquals(Money.of(90,"USD"),testAccount.getAvailableBalance());
 
 
 

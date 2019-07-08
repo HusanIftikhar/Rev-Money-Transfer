@@ -1,10 +1,15 @@
 package com.revolut.transfers.services;
 
+import com.revolut.transfers.enums.TransferStatus;
+import com.revolut.transfers.enums.TransferActions;
 import com.revolut.transfers.exceptions.AccountNotFoundException;
+import com.revolut.transfers.exceptions.InvalidAmountException;
 import com.revolut.transfers.model.Account;
 import com.revolut.transfers.repositories.AccountRepository;
+import org.javamoney.moneta.Money;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 
 public class TransferServiceImpl implements TransferService {
 
@@ -16,8 +21,15 @@ public class TransferServiceImpl implements TransferService {
     }
 
     @Override
-    public Double withdrawal(Long accountId, Double amount, String currency) {
-        return null;
+    public TransferStatus withdrawal(Long accountId, Double amount, String currency) throws AccountNotFoundException {
+        Account account = accountRepository.getAccountById(accountId);
+        TransferStatus transferStatus = TransferStatus.SUCCESS;
+        Money withdrawalAmount  = Money.of(amount,currency);
+        account.updateAmount(withdrawalAmount, TransferActions.WITHDRAWAL);
+        accountRepository.updateAccount(accountId,account);
+
+
+        return transferStatus;
     }
 
 
