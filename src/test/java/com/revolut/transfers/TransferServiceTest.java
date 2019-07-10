@@ -7,6 +7,7 @@ import com.revolut.transfers.exceptions.ExceptionConstants;
 import com.revolut.transfers.exceptions.InvalidAmountException;
 import com.revolut.transfers.model.Account;
 import com.revolut.transfers.repositories.AccountRepository;
+import com.revolut.transfers.services.CurrencyConversionService;
 import com.revolut.transfers.services.TransferServiceImpl;
 import org.javamoney.moneta.Money;
 import org.junit.jupiter.api.DisplayName;
@@ -26,11 +27,14 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class TransferServiceTest {
 
+    private static final double TEST_AMOUNT_GBP = 20.00;
     private Account testAccount = new Account(1L, "Iftikhar Hussain", 100.00);
     @InjectMocks
     private TransferServiceImpl transferService;
     @Mock
     private AccountRepository accountRepository;
+    @Mock
+    private CurrencyConversionService currencyService;
 
 
     @DisplayName("Should pass if valid account id is passed")
@@ -82,15 +86,15 @@ class TransferServiceTest {
     @DisplayName("should pass when currency code is valid currency code and is supported currencies by application ")
     @Test
     void testShouldPassIfCurrencyIsValidIsOfSupportedCurrencies(){
-        when(accountRepository.getAccountById(1L)).thenReturn(testAccount);
+       when(accountRepository.getAccountById(1L)).thenReturn(testAccount);
+        when(currencyService.validateAndConcvertCurrency(TEST_AMOUNT_GBP,"GBP")).thenReturn(Money.of(10,"USD"));
         TransferStatus status= transferService.withdrawal(1L,10.00,"USD");
         assertEquals(TransferStatus.SUCCESS,status);
-        status= transferService.withdrawal(1L,10.00,"GBP");
-        assertEquals(TransferStatus.SUCCESS,status);
-        status= transferService.withdrawal(1L,10.00,"EURO");
+        status= transferService.withdrawal(1L,TEST_AMOUNT_GBP,"GBP");
         assertEquals(TransferStatus.SUCCESS,status);
 
     }
+
 
 
 

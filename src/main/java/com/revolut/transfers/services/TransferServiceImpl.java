@@ -12,6 +12,7 @@ import org.javamoney.moneta.Money;
 public class TransferServiceImpl implements TransferService {
 
     private AccountRepository accountRepository;
+    private CurrencyConversionService currencyService;
     @Override
     public Account getAccountById(Long accountId) throws AccountNotFoundException {
         return  accountRepository.getAccountById(accountId);
@@ -23,7 +24,13 @@ public class TransferServiceImpl implements TransferService {
             throw new InvalidAmountException(ExceptionConstants.INVALID_AMOUNT_EXCEPTION_MESSAGE);
         }
         Account account = accountRepository.getAccountById(accountId);
-        Money withdrawalAmount  = Money.of(amount,currency);
+        Money withdrawalAmount;
+        if(currency.equalsIgnoreCase("USD")) {
+             withdrawalAmount = Money.of(amount, currency.toUpperCase());
+        }else{
+            withdrawalAmount = currencyService.validateAndConcvertCurrency(amount,currency);
+
+        }
         account.updateAmount(withdrawalAmount, TransferActions.WITHDRAWAL);
         accountRepository.updateAccount(accountId,account);
         return TransferStatus.SUCCESS;
