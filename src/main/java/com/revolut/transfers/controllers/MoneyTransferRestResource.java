@@ -1,4 +1,4 @@
-package com.revolut.transfers.com.revolut.transfer.controllers;
+package com.revolut.transfers.controllers;
 
 
 import com.google.inject.Inject;

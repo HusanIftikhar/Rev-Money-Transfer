@@ -1,4 +1,4 @@
-package com.revolut.transfers.com.revolut.transfer.config;
+package com.revolut.transfers.config;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
@@ -22,6 +22,7 @@ public class ApplicationConfig extends AbstractModule {
 
     @Override
     protected void configure() {
+
         Names.bindProperties(binder(),extractPropertiesFromVertxConfig(context.config()));
         bind(TransferService.class).to(TransferServiceImpl.class);
     }
@@ -29,9 +30,8 @@ public class ApplicationConfig extends AbstractModule {
     private Properties extractPropertiesFromVertxConfig(JsonObject vertexConfig) {
 
         Properties properties = new Properties();
-        vertexConfig.getMap().keySet().forEach(key->
+        vertexConfig.getMap().keySet().stream().filter(key->key.contains("vertx")).forEach(key->
             properties.setProperty(key,(String) vertexConfig.getValue(key)));
-
-    return properties;
+            return properties;
     }
 }
