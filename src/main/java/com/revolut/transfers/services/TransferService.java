@@ -17,4 +17,6 @@ public interface TransferService {
 
 
     TransferStatus withdrawal(Long accountId, Double amount, String currency) throws RuntimeException;
+
+  TransferStatus deposit(long accountId, double amount, String currency);
 }

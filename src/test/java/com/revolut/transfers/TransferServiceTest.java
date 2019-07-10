@@ -85,7 +85,7 @@ class TransferServiceTest {
 
     @DisplayName("should pass when currency code is valid currency code and is supported currencies by application ")
     @Test
-    void testShouldPassIfCurrencyIsValidIsOfSupportedCurrencies(){
+    void testAccountWithdrawalShouldPassIfCurrencyIsValidIsOfSupportedCurrencies(){
        when(accountRepository.getAccountById(1L)).thenReturn(testAccount);
         when(currencyService.validateAndConcvertCurrency(TEST_AMOUNT_GBP,"GBP")).thenReturn(Money.of(10,"USD"));
         TransferStatus status= transferService.withdrawal(1L,10.00,"USD");
@@ -97,6 +97,17 @@ class TransferServiceTest {
 
 
 
+    @DisplayName("should pass when amount is valid and account is valid should throw exception if account or amount is not valid")
+    @Test
+    void testDepositAmountIntoExistingAccount(){
+        when(accountRepository.getAccountById(1L)).thenReturn(testAccount);
+        TransferStatus status= transferService.deposit(1L,10.00,"USD");
+        assertEquals(TransferStatus.SUCCESS,status);
+        when(currencyService.validateAndConcvertCurrency(10,"GBP")).thenReturn(Money.of(12.00,"USD"));
+       status= transferService.deposit(1L,10.00,"GBP");
+
+        assertEquals(TransferStatus.SUCCESS,status);
+    }
 
 
 
