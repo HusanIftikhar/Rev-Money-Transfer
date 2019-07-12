@@ -44,8 +44,7 @@ public class Account {
 
         this.availableBalance = availableBalance.add(amount);
     }
-
-
+    
     public void updateAmount(Money amount, TransferActions transferAction) {
 
         try {
