@@ -3,6 +3,8 @@ package com.revolut.transfers.model;
 import com.revolut.transfers.enums.TransferActions;
 import org.javamoney.moneta.Money;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -11,6 +13,7 @@ public class Account {
     private final Long accountId;
     private final String accountTitle;
     private Money availableBalance;
+    private final List<Transactions> tranactionHistory;
     private Lock accountLock = new ReentrantLock();
 
 
@@ -18,8 +21,13 @@ public class Account {
         this.accountId = accountId;
         this.accountTitle = accountTitle;
         this.availableBalance = Money.of(availableBalance, "USD");
+        this.tranactionHistory = new CopyOnWriteArrayList<>();
     }
 
+
+    public int getTransactionHistorySize(){
+        return tranactionHistory.size();
+    }
 
     public Long getAccountId() {
         return accountId;
