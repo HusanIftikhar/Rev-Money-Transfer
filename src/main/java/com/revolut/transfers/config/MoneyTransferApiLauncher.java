@@ -11,6 +11,7 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.BodyHandler;
 
 
 public class MoneyTransferApiLauncher extends AbstractVerticle {
@@ -49,10 +50,13 @@ public static void main(String[] args) {
         Guice.createInjector(new ApplicationConfig(vertx)).injectMembers(this);
 
         Router apiRouter = Router.router(vertx);
+        apiRouter.route().handler(BodyHandler.create()).failureHandler(exceptionHandler::handle);
         apiRouter.get("/transfers/:accountId").handler(
-        moneyTransferRestResource::getAccountById).failureHandler(exceptionHandler::handle);
+                                moneyTransferRestResource::getAccountById);
+        apiRouter.put("/transfers/:sourceAccountId/:targetAccountId").handler(moneyTransferRestResource::transferAmountBetweenAccounts);
+        apiRouter.put("/transfers/:accountId/withdrawals").handler(moneyTransferRestResource::withdrawal);
+        apiRouter.put("/transfers/:accountId/deposits");
         vertx.createHttpServer().requestHandler(apiRouter::accept).listen(Integer.parseInt(port));
-
 
     }
 

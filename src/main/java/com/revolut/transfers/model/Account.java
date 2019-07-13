@@ -56,16 +56,20 @@ public class Account {
     }
     
     public void updateAmount(Money amount, TransferType transferAction) {
-
+            boolean success ;
         try {
             accountLock.lock();
             if (TransferType.WITHDRAWAL == transferAction) {
                 withdrawal(amount);
+                success=true;
             } else {
                 deposit(amount);
+                success=true;
             }
-            this.tranactionHistory.add(new Transaction(LocalDateTime.now(),transferAction,amount));
-        } finally {
+            if(success) {
+                this.tranactionHistory.add(new Transaction(LocalDateTime.now(), transferAction, amount));
+            }
+            } finally {
             accountLock.unlock();
         }
 
