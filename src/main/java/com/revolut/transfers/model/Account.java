@@ -4,6 +4,7 @@ import com.revolut.transfers.enums.TransferType;
 import org.javamoney.moneta.Money;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
@@ -14,7 +15,7 @@ public class Account {
     private final Long accountId;
     private final String accountTitle;
     private Money availableBalance;
-    private final List<Transaction> tranactionHistory;
+    private final List<Transaction> transactionHistory;
     private Lock accountLock = new ReentrantLock();
 
 
@@ -22,7 +23,7 @@ public class Account {
         this.accountId = accountId;
         this.accountTitle = accountTitle;
         this.availableBalance = Money.of(availableBalance, "USD");
-        this.tranactionHistory = new CopyOnWriteArrayList<>();
+        this.transactionHistory = new CopyOnWriteArrayList<>();
     }
 
     public String getAccountTitle() {
@@ -30,7 +31,7 @@ public class Account {
     }
 
     public int getTransactionHistorySize(){
-        return tranactionHistory.size();
+        return transactionHistory.size();
     }
 
     public Long getAccountId() {
@@ -38,7 +39,11 @@ public class Account {
     }
 
 
+    public List<Transaction> getTransactionHistory(){
 
+        return Collections.unmodifiableList(transactionHistory);
+
+    }
     public Money getAvailableBalance() {
         return availableBalance;
     }
@@ -67,7 +72,7 @@ public class Account {
                 success=true;
             }
             if(success) {
-                this.tranactionHistory.add(new Transaction(LocalDateTime.now(), transferAction, amount));
+                this.transactionHistory.add(new Transaction(LocalDateTime.now(), transferAction, amount));
             }
             } finally {
             accountLock.unlock();

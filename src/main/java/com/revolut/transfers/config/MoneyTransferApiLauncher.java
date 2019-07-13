@@ -51,11 +51,11 @@ public static void main(String[] args) {
 
         Router apiRouter = Router.router(vertx);
         apiRouter.route().handler(BodyHandler.create()).failureHandler(exceptionHandler::handle);
-        apiRouter.get("/transfers/:accountId").handler(
-                                moneyTransferRestResource::getAccountById);
-        apiRouter.put("/transfers/:sourceAccountId/:targetAccountId").handler(moneyTransferRestResource::transferAmountBetweenAccounts);
-        apiRouter.put("/transfers/:accountId/withdrawals").handler(moneyTransferRestResource::withdrawal);
-        apiRouter.put("/transfers/:accountId/deposits");
+        apiRouter.get("/transactions/:accountId/history").handler(moneyTransferRestResource::getTransactionHistory);
+        apiRouter.get("'/transactions/:accountId").handler(moneyTransferRestResource::getAccountById);
+        apiRouter.put("/transactions/:sourceAccountId/:targetAccountId/transfers").handler(moneyTransferRestResource::transferAmountBetweenAccounts);
+        apiRouter.put("/transactions/:accountId/withdrawals").handler(moneyTransferRestResource::withdrawal);
+        apiRouter.put("/transactions/:accountId/deposits").handler(moneyTransferRestResource::deposit);
         vertx.createHttpServer().requestHandler(apiRouter::accept).listen(Integer.parseInt(port));
 
     }

@@ -4,15 +4,17 @@ package com.revolut.transfers.api;
 import com.google.inject.Inject;
 import com.revolut.transfers.dto.AccountDTO;
 import com.revolut.transfers.dto.ResponseDTO;
-import com.revolut.transfers.enums.TransferStatus;
+import com.revolut.transfers.dto.TransactionHistoryDTO;
+import com.revolut.transfers.model.Transaction;
 import com.revolut.transfers.services.TransferService;
 import io.netty.handler.codec.http.HttpResponseStatus;
-import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpHeaders;
-import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.revolut.transfers.utils.ApplicationConstants.APPLICATION_JSON;
 import static com.revolut.transfers.utils.ApplicationConstants.CONTENT_TYPE;
@@ -53,13 +55,13 @@ public class MoneyTransferRestResource {
         Long accountId = Long.parseLong(routingContext.request().getParam("accountId"));
         JsonObject requestBody = routingContext.getBodyAsJson();
         transferService.withdrawal(accountId,requestBody.getDouble("amount"),requestBody.getString("currencyCode"));
-        createResponse("SUCCESS","Withdrawal Successfull",routingContext);
+        createResponse("SUCCESS","Withdrawal Successful",routingContext);
     }
     public void deposit(RoutingContext routingContext) {
         Long accountId = Long.parseLong(routingContext.request().getParam("accountId"));
         JsonObject requestBody = routingContext.getBodyAsJson();
         transferService.deposit(accountId,requestBody.getDouble("amount"),requestBody.getString("currencyCode"));
-        createResponse("SUCCESS","Deposit Successfull",routingContext);
+        createResponse("SUCCESS","Deposit successful",routingContext);
     }
 
 
@@ -68,8 +70,17 @@ public class MoneyTransferRestResource {
 
     private <T>void createResponse(final T result, final String message ,final RoutingContext routingContext){
         String responseBody =Json.encodePrettily(ResponseDTO.createResponse(result,message, HttpResponseStatus.OK.code()));
-        routingContext.response().putHeader(HttpHeaders.CONTENT_TYPE,APPLICATION_JSON).end(responseBody);
+        routingContext.response().setStatusCode(HttpResponseStatus.OK.code()).putHeader(HttpHeaders.CONTENT_TYPE,APPLICATION_JSON).end(responseBody);
     }
 
+    public void getTransactionHistory(RoutingContext routingContext) {
+
+        Long accountId = Long.parseLong(routingContext.request().getParam("accountId"));
+        List<Transaction> transactions = transferService.getAccountById(accountId).getTransactionHistory();
+        createResponse(transactions.stream().map(TransactionHistoryDTO::new).collect(Collectors.toList()),
+                "Total Transactions: "+transactions.size(),
+               routingContext );
+
+    }
 }
 
