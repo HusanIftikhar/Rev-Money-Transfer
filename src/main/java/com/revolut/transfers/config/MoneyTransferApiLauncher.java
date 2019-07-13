@@ -3,7 +3,8 @@ package com.revolut.transfers.config;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.revolut.transfers.controllers.MoneyTransferRestResource;
+import com.revolut.transfers.api.MoneyTransferRestResource;
+import com.revolut.transfers.handlers.ExceptionHandler;
 import io.vertx.config.ConfigRetriever;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
@@ -15,6 +16,8 @@ import io.vertx.ext.web.Router;
 public class MoneyTransferApiLauncher extends AbstractVerticle {
     @Inject
     private MoneyTransferRestResource moneyTransferRestResource;
+    @Inject
+    private ExceptionHandler exceptionHandler;
 
    @Inject
     @Named("vertx.http.port")
@@ -46,10 +49,8 @@ public static void main(String[] args) {
         Guice.createInjector(new ApplicationConfig(vertx)).injectMembers(this);
 
         Router apiRouter = Router.router(vertx);
-
-        apiRouter.get("/account/:id").handler(
-                moneyTransferRestResource::getAccountById);
-
+        apiRouter.get("/transfers/:accountId").handler(
+        moneyTransferRestResource::getAccountById).failureHandler(exceptionHandler::handle);
         vertx.createHttpServer().requestHandler(apiRouter::accept).listen(Integer.parseInt(port));
 
 

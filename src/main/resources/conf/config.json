@@ -1,6 +1,5 @@
 {
 "vertx.http.port":"8089",
- "vertx.database.url": "jdbc:h2:mem:BANK_DB;AUTOCOMMIT=OFF",
- "vertex.database.name": "BANK_DB"
+
 
 }

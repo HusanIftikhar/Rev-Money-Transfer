@@ -1,29 +1,29 @@
 package com.revolut.transfers.model;
 
-import com.revolut.transfers.enums.TransferActions;
+import com.revolut.transfers.enums.TransferType;
 import org.javamoney.moneta.Money;
 
 import java.time.LocalDateTime;
 
-public class Transactions {
+public class Transaction {
 
     private final LocalDateTime transactionTime;
-    private final TransferActions transferType;
+    private final TransferType transferType;
     private final Money transferAmount;
-    private final Long transferAccount;
 
-    public Transactions(LocalDateTime transactionTime, TransferActions transferType, Money transferAmount, Long transferAccount) {
+
+    public Transaction(LocalDateTime transactionTime, TransferType transferType, Money transferAmount) {
         this.transactionTime = transactionTime;
         this.transferType = transferType;
         this.transferAmount = transferAmount;
-        this.transferAccount = transferAccount;
+
     }
 
     public LocalDateTime getTransactionTime() {
         return transactionTime;
     }
 
-    public TransferActions getTransferType() {
+    public TransferType getTransferType() {
         return transferType;
     }
 
@@ -31,7 +31,5 @@ public class Transactions {
         return transferAmount;
     }
 
-    public Long getTransferAccount() {
-        return transferAccount;
-    }
+
 }

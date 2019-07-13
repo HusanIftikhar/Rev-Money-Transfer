@@ -161,13 +161,11 @@ class TransferServiceTest {
     @Test
     @DisplayName("should throw exception when both source and target accounts are same")
     void testFundTransferWithSameSourceAndTargetAccounts(){
-        when(transferService.getAccountById(anyLong())).thenReturn(testAccount1);
+        when(accountRepository.getAccountById(anyLong())).thenReturn(testAccount1);
 
 
         Account account1 = transferService.getAccountById(1L);
         Account account2 = transferService.getAccountById(2L);
-        doNothing().when(accountRepository).updateAccount(anyLong(), any(Account.class));
-        transferService.transfer(account1.getAccountId(),account2.getAccountId(),30.00,US_CURRENCY_CODE);
         assertThrows(SameAccountTransferRequestException.class, () -> transferService.transfer(account1.getAccountId(),account2.getAccountId(),50,US_CURRENCY_CODE),
                 "Expected throw SameAccountTransferRequestException but it didn't throw");
         assertThatThrownBy(() -> transferService.transfer(account1.getAccountId(),account2.getAccountId(),50,US_CURRENCY_CODE))

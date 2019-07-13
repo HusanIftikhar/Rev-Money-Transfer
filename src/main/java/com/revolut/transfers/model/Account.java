@@ -1,8 +1,9 @@
 package com.revolut.transfers.model;
 
-import com.revolut.transfers.enums.TransferActions;
+import com.revolut.transfers.enums.TransferType;
 import org.javamoney.moneta.Money;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
@@ -13,7 +14,7 @@ public class Account {
     private final Long accountId;
     private final String accountTitle;
     private Money availableBalance;
-    private final List<Transactions> tranactionHistory;
+    private final List<Transaction> tranactionHistory;
     private Lock accountLock = new ReentrantLock();
 
 
@@ -24,6 +25,9 @@ public class Account {
         this.tranactionHistory = new CopyOnWriteArrayList<>();
     }
 
+    public String getAccountTitle() {
+        return accountTitle;
+    }
 
     public int getTransactionHistorySize(){
         return tranactionHistory.size();
@@ -33,9 +37,7 @@ public class Account {
         return accountId;
     }
 
-    public String getAccountTitle() {
-        return accountTitle;
-    }
+
 
     public Money getAvailableBalance() {
         return availableBalance;
@@ -53,15 +55,16 @@ public class Account {
         this.availableBalance = availableBalance.add(amount);
     }
     
-    public void updateAmount(Money amount, TransferActions transferAction) {
+    public void updateAmount(Money amount, TransferType transferAction) {
 
         try {
             accountLock.lock();
-            if (TransferActions.WITHDRAWAL == transferAction) {
+            if (TransferType.WITHDRAWAL == transferAction) {
                 withdrawal(amount);
             } else {
                 deposit(amount);
             }
+            this.tranactionHistory.add(new Transaction(LocalDateTime.now(),transferAction,amount));
         } finally {
             accountLock.unlock();
         }

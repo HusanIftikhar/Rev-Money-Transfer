@@ -1,7 +1,7 @@
 package com.revolut.transfers.services;
 
 import com.google.inject.Inject;
-import com.revolut.transfers.enums.TransferActions;
+import com.revolut.transfers.enums.TransferType;
 import com.revolut.transfers.enums.TransferStatus;
 import com.revolut.transfers.exceptions.*;
 import com.revolut.transfers.model.Account;
@@ -35,7 +35,7 @@ public class TransferServiceImpl implements TransferService {
 
 
         }
-        account.updateAmount(convertDoubleToMoney(amount, currency), TransferActions.WITHDRAWAL);
+        account.updateAmount(convertDoubleToMoney(amount, currency), TransferType.WITHDRAWAL);
         accountRepository.updateAccount(accountId,account);
         return TransferStatus.SUCCESS;
     }
@@ -48,7 +48,7 @@ public class TransferServiceImpl implements TransferService {
 
         }
         Account account = accountRepository.getAccountById(accountId);
-        account.updateAmount(convertDoubleToMoney(amount, currency), TransferActions.DEPOSIT);
+        account.updateAmount(convertDoubleToMoney(amount, currency), TransferType.DEPOSIT);
         accountRepository.updateAccount(accountId,account);
         return TransferStatus.SUCCESS;
  }
