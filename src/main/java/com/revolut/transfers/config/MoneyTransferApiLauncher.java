@@ -9,6 +9,7 @@ import io.vertx.config.ConfigRetriever;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -43,18 +44,19 @@ public class MoneyTransferApiLauncher extends AbstractVerticle {
 
 
     }
-//TODO: refactor start method
+    //TODO: refactor start method
     public void start() {
 
         Guice.createInjector(new ApplicationConfig(vertx)).injectMembers(this);
 
         Router apiRouter = Router.router(vertx);
         apiRouter.route().handler(BodyHandler.create()).failureHandler(exceptionHandler::handle);
-        apiRouter.get("/transactions/:accountId/history").handler(moneyTransferRestResource::getTransactionHistory);
-        apiRouter.get("'/transactions/:accountId").handler(moneyTransferRestResource::getAccountById);
-        apiRouter.put("/transactions/:sourceAccountId/:targetAccountId/transfers").handler(moneyTransferRestResource::transferAmountBetweenAccounts);
-        apiRouter.put("/transactions/:accountId/withdrawals").handler(moneyTransferRestResource::withdrawal);
-        apiRouter.put("/transactions/:accountId/deposits").handler(moneyTransferRestResource::deposit);
+        apiRouter.get("/transactions/accounts/:accountId").handler(moneyTransferRestResource::getAccountById);
+        apiRouter.put("/transactions/accounts/:accountId/withdrawals").handler(moneyTransferRestResource::withdrawal);
+        apiRouter.put("/transactions/accounts/:accountId/deposits").handler(moneyTransferRestResource::deposit);
+        apiRouter.get("/transactions/accounts/:accountId/history").handler(moneyTransferRestResource::getTransactionHistory);
+        apiRouter.put("/transactions/accounts/:sourceAccountId/:targetAccountId/transfers").handler(moneyTransferRestResource::transferAmountBetweenAccounts);
+
         vertx.createHttpServer().requestHandler(apiRouter::accept).listen(Integer.parseInt(port));
 
     }

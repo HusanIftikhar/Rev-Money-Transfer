@@ -7,6 +7,8 @@ import com.revolut.transfers.exceptions.AccountNotFoundException;
 import com.revolut.transfers.exceptions.InvalidAmountException;
 import com.revolut.transfers.exceptions.SameAccountTransferRequestException;
 import com.revolut.transfers.exceptions.UnSufficientFundException;
+import com.revolut.transfers.utils.ApplicationConstants;
+import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.Json;
 import io.vertx.ext.web.RoutingContext;
@@ -20,14 +22,15 @@ public class ExceptionHandler {
         TransferStatus status = resolveStatusCode(failure);
         HttpServerResponse response = routingContext.response();
 
-        response.setStatusCode(status.getHttpCode()).end(createResponse(failure, status));
+        response.putHeader(HttpHeaders.CONTENT_TYPE, ApplicationConstants.APPLICATION_JSON)
+                .setStatusCode(status.getHttpCode()).end(createResponse(failure, status));
 
 
     }
 
 
 
-    public TransferStatus resolveStatusCode(Throwable th){
+    private TransferStatus resolveStatusCode(Throwable th){
         TransferStatus status ;
         if(th instanceof AccountNotFoundException){
             status = TransferStatus.NOT_FOUND;
