@@ -20,32 +20,31 @@ public class MoneyTransferApiLauncher extends AbstractVerticle {
     @Inject
     private ExceptionHandler exceptionHandler;
 
-   @Inject
+    @Inject
     @Named("vertx.http.port")
     private String port;
 
-public static void main(String[] args) {
+    public static void main(String[] args) {
 
 
         Vertx vertx = Vertx.vertx();
-    ConfigRetriever configRetriv = ConfigRetriever.create(vertx);
-    configRetriv.getConfig(handler->{
+        ConfigRetriever configRetriv = ConfigRetriever.create(vertx);
+        configRetriv.getConfig(handler -> {
 
 
-        if(handler.succeeded()) {
+            if (handler.succeeded()) {
 
-            JsonObject configResult = handler.result();
-            DeploymentOptions options = new DeploymentOptions().setConfig(configResult);
-            vertx.deployVerticle(new MoneyTransferApiLauncher(),options);
-        }
+                JsonObject configResult = handler.result();
+                DeploymentOptions options = new DeploymentOptions().setConfig(configResult);
+                vertx.deployVerticle(new MoneyTransferApiLauncher(), options);
+            }
 
-    });
-
+        });
 
 
     }
-
-    public  void start(){
+//TODO: refactor start method
+    public void start() {
 
         Guice.createInjector(new ApplicationConfig(vertx)).injectMembers(this);
 
@@ -59,6 +58,8 @@ public static void main(String[] args) {
         vertx.createHttpServer().requestHandler(apiRouter::accept).listen(Integer.parseInt(port));
 
     }
+
+
 
 
 }

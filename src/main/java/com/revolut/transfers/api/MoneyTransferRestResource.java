@@ -17,23 +17,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.revolut.transfers.utils.ApplicationConstants.APPLICATION_JSON;
-import static com.revolut.transfers.utils.ApplicationConstants.CONTENT_TYPE;
 
 public class MoneyTransferRestResource {
     @Inject
     private TransferService transferService;
 
 
-    public void getAccountById(RoutingContext routingContext){
+    public void getAccountById(RoutingContext routingContext) {
 
 
-            final long accountId =Long.parseLong(routingContext.request().getParam("accountId"));
+        final long accountId = Long.parseLong(routingContext.request().getParam("accountId"));
 
-                AccountDTO response = AccountDTO.createAccountDTO(transferService.getAccountById(accountId));
+        AccountDTO account = AccountDTO.createAccountDTO(transferService.getAccountById(accountId));
+        createResponse(account, "Account Found", routingContext);
 
-                routingContext.response().setStatusCode(200)
-                        .putHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .end(Json.encode(response));
     }
 
 
@@ -42,45 +39,44 @@ public class MoneyTransferRestResource {
         Long targetAccountId = Long.parseLong(routingContext.request().getParam("targetAccountId"));
 
         JsonObject requestBody = routingContext.getBodyAsJson();
-         transferService.transfer
-                (sourceAccountId,targetAccountId,requestBody.getDouble("amount"),requestBody.getString("currencyCode"));
-        createResponse("SUCCESS","Balance Transferred Successfully",routingContext);
+        transferService.transfer
+                (sourceAccountId, targetAccountId, requestBody.getDouble("amount"), requestBody.getString("currencyCode"));
+        createResponse("SUCCESS", "Balance Transferred Successfully", routingContext);
     }
-
-
-
-
 
     public void withdrawal(RoutingContext routingContext) {
         Long accountId = Long.parseLong(routingContext.request().getParam("accountId"));
         JsonObject requestBody = routingContext.getBodyAsJson();
-        transferService.withdrawal(accountId,requestBody.getDouble("amount"),requestBody.getString("currencyCode"));
-        createResponse("SUCCESS","Withdrawal Successful",routingContext);
+        transferService.withdrawal(accountId, requestBody.getDouble("amount"), requestBody.getString("currencyCode"));
+        createResponse("SUCCESS", "Withdrawal Successful", routingContext);
     }
+
     public void deposit(RoutingContext routingContext) {
         Long accountId = Long.parseLong(routingContext.request().getParam("accountId"));
         JsonObject requestBody = routingContext.getBodyAsJson();
-        transferService.deposit(accountId,requestBody.getDouble("amount"),requestBody.getString("currencyCode"));
-        createResponse("SUCCESS","Deposit successful",routingContext);
+        transferService.deposit(accountId, requestBody.getDouble("amount"),
+                requestBody.getString("currencyCode"));
+        createResponse("SUCCESS", "Deposit successful", routingContext);
     }
 
-
-
-
-
-    private <T>void createResponse(final T result, final String message ,final RoutingContext routingContext){
-        String responseBody =Json.encodePrettily(ResponseDTO.createResponse(result,message, HttpResponseStatus.OK.code()));
-        routingContext.response().setStatusCode(HttpResponseStatus.OK.code()).putHeader(HttpHeaders.CONTENT_TYPE,APPLICATION_JSON).end(responseBody);
-    }
 
     public void getTransactionHistory(RoutingContext routingContext) {
 
         Long accountId = Long.parseLong(routingContext.request().getParam("accountId"));
         List<Transaction> transactions = transferService.getAccountById(accountId).getTransactionHistory();
         createResponse(transactions.stream().map(TransactionHistoryDTO::new).collect(Collectors.toList()),
-                "Total Transactions: "+transactions.size(),
-               routingContext );
+                "Total Transactions: " + transactions.size(),
+                routingContext);
 
     }
+
+
+    private <T> void createResponse(final T result, final String message, final RoutingContext routingContext) {
+        String responseBody = Json.encodePrettily(ResponseDTO.createResponse(result, message, HttpResponseStatus.OK.code()));
+        routingContext.response().setStatusCode(HttpResponseStatus.OK.code())
+                .putHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+                .end(responseBody);
+    }
+
 }
 

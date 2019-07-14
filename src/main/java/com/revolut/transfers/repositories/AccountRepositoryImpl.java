@@ -8,7 +8,7 @@ import com.revolut.transfers.utils.AccountsDatabase;
 
 import java.util.Objects;
 
-public class AccountRepositoryImpl implements AccountRepository{
+public class AccountRepositoryImpl implements AccountRepository {
 
     @Inject
     private AccountsDatabase accountsDatabase;
@@ -17,13 +17,14 @@ public class AccountRepositoryImpl implements AccountRepository{
     public Account getAccountById(Long id) throws AccountNotFoundException {
 
         Account account = accountsDatabase.getAccount(id);
-        if(Objects.isNull(account)) throw new AccountNotFoundException(ExceptionConstants.ACCOUNT_NOT_FOUND_EXCEPTION_MESSAGE + id);
+        if (Objects.isNull(account))
+            throw new AccountNotFoundException(ExceptionConstants.ACCOUNT_NOT_FOUND_EXCEPTION_MESSAGE + id);
         return account;
 
     }
 
     @Override
-    public  void updateAccount(Long accountId, Account account) {
+    public void updateAccount(Long accountId, Account account) {
         accountsDatabase.updateAccount(account);
     }
 
