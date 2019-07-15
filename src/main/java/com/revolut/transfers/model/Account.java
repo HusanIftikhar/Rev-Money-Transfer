@@ -48,18 +48,46 @@ public class Account {
         return availableBalance;
     }
 
-
+    /**
+     *
+     *
+     * subtract money
+     *
+     *
+     * */
     private void withdrawal(Money amount) {
 
         this.availableBalance = availableBalance.subtract(amount);
 
     }
 
+    /**
+     *
+     *
+     *
+     * @param amount
+     *
+     * add amount if its deposit request
+     *
+     */
+
     private void deposit(Money amount) {
 
         this.availableBalance = availableBalance.add(amount);
     }
-    
+    /**
+     *
+     * declare boolean flag to check if account update is successful
+     * call {@link #withdrawal(Money)} id is withdrawal request
+     * call {@link #deposit(Money)} if deposit request
+     * if either of this process successful it add the transaction into {@link #transactionHistory}
+     * with status withdrawal or deposit
+     * NOTE : vert.x environment is by default is low concurrency
+     * vert.x supports reactive model it single event thread per core
+     * but for the edge cases locked the object during modification
+     * with java concurrent locks
+     * @see #accountLock
+     * */
     public void updateAmount(Money amount, TransferType transferAction) {
             boolean success ;
         try {

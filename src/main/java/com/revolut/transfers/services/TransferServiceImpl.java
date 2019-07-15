@@ -18,11 +18,41 @@ public class TransferServiceImpl implements TransferService {
 
     @Inject
     private AccountRepository accountRepository;
-
+    /**
+    * @Description
+     * Fetch account from storage by account id
+    *
+    * @Throws AccountNotFoundException if account is not available
+    *
+    * @see  com.revolut.transfers.exceptions.AccountNotFoundException
+    *
+    * */
     @Override
     public Account getAccountById(Long accountId) throws AccountNotFoundException {
         return accountRepository.getAccountById(accountId);
     }
+
+    /**
+     *
+
+     *
+     * @description
+     * 1) check if #amount is not - or 0 throw Invalid amount exception if invalid
+     * @see InvalidAmountException
+     *
+     * 2)Get account from storage. if account not available throws AccountNotFoundException
+     *
+     * 3) convert request amount to USD and compare in requested amount throws {@link UnSufficientFundException}
+     * also
+     * @see #getAmountInUSD() in the same class
+     *
+     *  then calls the update method of account object
+     * @see Account#updateAmount(Money, TransferType)
+     *
+     * update the data in storage by {@link #accountRepository }
+     * @return {@link TransferStatus#SUCCESS} if successful
+     *
+     */
 
     @Override
     public TransferStatus withdrawal(Long accountId, Double amount, String currency) throws RuntimeException {
@@ -40,6 +70,17 @@ public class TransferServiceImpl implements TransferService {
         return TransferStatus.SUCCESS;
     }
 
+    /**
+     *
+     *
+     * @description :
+     *     same as the {@link #withdrawal(Long, Double, String)} method
+     *     only exception not thrown by this method is {@link UnSufficientFundException}
+     *
+     *
+     */
+
+
 
     @Override
     public TransferStatus deposit(long accountId, double amount, String currency) {
@@ -52,6 +93,17 @@ public class TransferServiceImpl implements TransferService {
         accountRepository.updateAccount(accountId, account);
         return TransferStatus.SUCCESS;
     }
+
+    /**
+    * @description
+    * checks @param sourceAccountId and targetAccountId throw {@link SameAccountTransferRequestException}
+    * if source and target accounts are same
+    *
+     * uses {@link #withdrawal(Long, Double, String)} and {@link #deposit(long, double, String)}
+     * for both sourceAccountId and targetAccountId to update
+     *
+     *
+    * */
 
     @Override
     public TransferStatus transfer(Long sourceAccountId, Long targetAccountId, double amount, String currencyCode) {
@@ -68,7 +120,12 @@ public class TransferServiceImpl implements TransferService {
         return status;
     }
 
-
+    /**
+    *
+    * {@link BiFunction} accepts {@link Double } and {@link String} currency code
+    * @return Double amount value in #US_CURRENCY_CODE
+    *
+    * */
     private BiFunction<Double, String, Double> getAmountInUSD() {
         return (amount, currencyCode) -> {
 
@@ -87,7 +144,9 @@ public class TransferServiceImpl implements TransferService {
 
     }
 
-    //convert double amount to Money in USD
+    /**
+    * convert double value to @{@link Money}
+    * */
     private Money convertDoubleToMoney(Double amount, String currency) {
         return Money.of(this.getAmountInUSD().apply(amount, currency), ApplicationConstants.US_CURRENCY_CODE);
     }

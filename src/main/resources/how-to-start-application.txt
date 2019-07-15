@@ -1,0 +1,8 @@
+1) To package : mvn clean package
+
+2) To Run tests : mvn test
+
+3)To run application
+
+ Go inside target folder in project director
+ java -jar money-transfer-1.0-SNAPSHOT-fat.jar

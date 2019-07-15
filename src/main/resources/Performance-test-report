@@ -1,0 +1,61 @@
+Performance Testing Using Apache bench mark tool below is requests- (please install apache benchmark tool before running
+the commands. sudo apt-get ab on linux and on mac is available by default)
+
+Request 1: 1000 request 100 concurrent
+ab -n 1000 -c 100 -H "content-type: application/json" http://localhost:8089/transactions/accounts/70001
+
+Report 1
+
+Concurrency Level:      100
+Time taken for tests:   0.304 seconds
+Complete requests:      1000
+Failed requests:        0
+Total transferred:      246000 bytes
+HTML transferred:       174000 bytes
+Requests per second:    3290.44 [#/sec] (mean)
+Time per request:       30.391 [ms] (mean)
+Time per request:       0.304 [ms] (mean, across all concurrent requests)
+Transfer rate:          790.48 [Kbytes/sec] received
+
+
+
+
+Request 2 : 10000 and 200 concurrent
+
+ab -n 10000 -c 200 -p request-data.json  -T 'application/json' http://localhost:8089/transactions/accounts/70001/deposits
+
+Report 2
+
+Concurrency Level:      200
+Time taken for tests:   0.462 seconds
+Complete requests:      10000
+Failed requests:        0
+Non-2xx responses:      10000
+Total transferred:      1390000 bytes
+Total body sent:        2120000
+HTML transferred:       530000 bytes
+Requests per second:    21631.07 [#/sec] (mean)
+Time per request:       9.246 [ms] (mean)
+Time per request:       0.046 [ms] (mean, across all concurrent requests)
+Transfer rate:          2936.25 [Kbytes/sec] received
+                        4478.31 kb/s sent
+                        7414.56 kb/s total
+
+
+Request 3
+
+ ab -n 10000 -c 300  -T 'application/json' http://localhost:8089/transactions/accounts/70001/history
+
+Report 3
+
+Concurrency Level:      300
+Time taken for tests:   1.137 seconds
+Complete requests:      10000
+Failed requests:        0
+Total transferred:      2720000 bytes
+HTML transferred:       2000000 bytes
+Requests per second:    8797.65 [#/sec] (mean)
+Time per request:       34.100 [ms] (mean)
+Time per request:       0.114 [ms] (mean, across all concurrent requests)
+Transfer rate:          2336.88 [Kbytes/sec] received
+

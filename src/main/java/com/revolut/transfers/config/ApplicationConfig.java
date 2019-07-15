@@ -14,7 +14,13 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 
 import java.util.Properties;
-
+/**
+ *
+ * Configuration for google quice for DI
+ *
+ *
+ *
+ * */
 public class ApplicationConfig extends AbstractModule {
 
 
@@ -24,6 +30,7 @@ public class ApplicationConfig extends AbstractModule {
         this.context = vertx.getOrCreateContext();
 
     }
+
 
     @Override
     protected void configure() {
