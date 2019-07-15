@@ -9,13 +9,15 @@ import io.vertx.config.ConfigRetriever;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 
+import static com.revolut.transfers.utils.ApplicationConstants.*;
 
 public class MoneyTransferApiLauncher extends AbstractVerticle {
+
+
     @Inject
     private MoneyTransferRestResource moneyTransferRestResource;
     @Inject
@@ -44,24 +46,26 @@ public class MoneyTransferApiLauncher extends AbstractVerticle {
 
 
     }
-    //TODO: refactor start method
+
     public void start() {
 
         Guice.createInjector(new ApplicationConfig(vertx)).injectMembers(this);
-
-        Router apiRouter = Router.router(vertx);
-        apiRouter.route().handler(BodyHandler.create()).failureHandler(exceptionHandler::handle);
-        apiRouter.get("/transactions/accounts/:accountId").handler(moneyTransferRestResource::getAccountById);
-        apiRouter.put("/transactions/accounts/:accountId/withdrawals").handler(moneyTransferRestResource::withdrawal);
-        apiRouter.put("/transactions/accounts/:accountId/deposits").handler(moneyTransferRestResource::deposit);
-        apiRouter.get("/transactions/accounts/:accountId/history").handler(moneyTransferRestResource::getTransactionHistory);
-        apiRouter.put("/transactions/accounts/:sourceAccountId/:targetAccountId/transfers").handler(moneyTransferRestResource::transferAmountBetweenAccounts);
-
+        Router apiRouter = prepareEndPoints();
         vertx.createHttpServer().requestHandler(apiRouter::accept).listen(Integer.parseInt(port));
 
     }
 
 
+    private Router prepareEndPoints() {
+        Router apiRouter = Router.router(vertx);
+        apiRouter.route().handler(BodyHandler.create()).failureHandler(exceptionHandler::handle);
+        apiRouter.get(GET_ACCOUNT_SERVICE_END_POINT).handler(moneyTransferRestResource::getAccountById);
+        apiRouter.put(ACCOUNT_WITHDRAWAL_SERVICE_END_POINT).handler(moneyTransferRestResource::withdrawal);
+        apiRouter.put(ACCOUNT_DEPOSIT_SERVICE_END_POINT).handler(moneyTransferRestResource::deposit);
+        apiRouter.get(GET_ACCOUNT_HISTORY_SERVICE_END_POINT).handler(moneyTransferRestResource::getTransactionHistory);
+        apiRouter.put(ACCOUNT_TRANSFER_SERVICE_END_POINT).handler(moneyTransferRestResource::transferAmountBetweenAccounts);
+        return apiRouter;
+    }
 
 
 }
